@@ -1,0 +1,85 @@
+ARG from
+
+FROM ${from} as builder
+
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends build-essential cmake doxygen \
+		g++ git octave python-dev python-setuptools wget mlocate \
+		ipython python-h5py python-numpy \
+		python-pip python-wheel python-scipy qt5-default minizip \
+	&& apt-get install -y --no-install-recommends ann-tools libann-dev            \
+		libassimp-dev libavcodec-dev libavformat-dev libeigen3-dev libfaac-dev          \
+		libflann-dev libfreetype6-dev liblapack-dev libglew-dev libgsm1-dev             \
+		libmpfi-dev  libmpfr-dev liboctave-dev libode-dev libogg-dev libpcre3-dev       \
+		libqhull-dev libswscale-dev libtinyxml-dev libvorbis-dev libx264-dev            \
+		libxml2-dev libxvidcore-dev libbz2-dev libsoqt-dev-common libsoqt4-dev \
+		libccd-dev liblog4cxx-dev libminizip-dev octomap-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install rapidjson
+RUN mkdir -p ~/3rdparty \
+	&& cd ~/3rdparty && git clone https://github.com/Tencent/rapidjson.git Tencent/rapidjson \
+	&& cd Tencent/rapidjson && mkdir build && cd build \
+	&& cmake .. -DRAPIDJSON_BUILD_TESTS=OFF -DRAPIDJSON_BUILD_DOC=OFF -DRAPIDJSON_BUILD_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=Release && make -j `nproc` && make install \
+	&& cd ../../.. && rm -rf Tencent
+
+RUN git config --global user.email "fujii.shohei@gmail.com"
+RUN git config --global user.name "Shohei Fujii"
+
+# Install Pybind
+RUN cd ~/3rdparty && git clone https://github.com/pybind/pybind11.git pybind/pybind11 \
+	&& cd pybind/pybind11 && mkdir build && cd build \
+	&& git remote add woody https://github.com/woodychow/pybind11.git \
+    && git fetch woody && git checkout v2.2.4 \
+    && git cherry-pick 94824d68a037d99253b92a5b260bb04907c42355 \
+    && git cherry-pick 98c9f77e5481af4cbc7eb092e1866151461e3508 \
+    && cmake .. -DPYBIND11_TEST=OFF -DPythonLibsNew_FIND_VERSION=2 -DCMAKE_BUILD_TYPE=Release \
+    && make install \
+	&& cd ../../../ && rm -rf pybind
+
+# Install osg
+RUN OSG_COMMIT=1f89e6eb1087add6cd9c743ab07a5bce53b2f480 \
+	&& mkdir -p ~/3rdparty && cd ~/3rdparty \
+	&& git clone https://github.com/openscenegraph/OpenSceneGraph.git openscenegraph/OpenSceneGraph \
+	&& cd openscenegraph/OpenSceneGraph && git reset --hard ${OSG_COMMIT} \
+	&& mkdir build && cd build \
+	&& BOOST_ROOT=/usr/local cmake -DDESIRED_QT_VERSION=4 -DCMAKE_BUILD_TYPE=Release  -DBoost_NO_BOOST_CMAKE=ON -DBUILD_OSG_APPLICATIONS=ON -DBUILD_OSG_EXAMPLES=OFF ..\
+	&& make -j `nproc` \
+	&& make install \
+	&& make install_ld_conf \
+	&& cd ../../../ && rm -rf openscenegraph
+
+# Install fcl
+RUN mkdir -p ~/3rdparty/ && cd ~/3rdparty \
+	&& git clone https://github.com/flexible-collision-library/fcl flexible-collision-library/fcl \
+	&& cd flexible-collision-library/fcl && git reset --hard 0.5.0 \
+	&& mkdir build && cd build \
+	&& BOOST_ROOT=/usr/local cmake -DCMAKE_BUILD_TYPE=Release  -DBoost_NO_BOOST_CMAKE=ON .. \
+	&& make -j `nproc` \
+	&& make install \
+	&& cd ../../../ && rm -rf flexible-collision-library
+
+# Install collada-dom
+RUN mkdir -p ~/3rdparty && cd ~/3rdparty \
+	&& git clone https://github.com/rdiankov/collada-dom rdiankov/collada-dom \
+	&& cd rdiankov/collada-dom && mkdir build && cd build\
+	&& BOOST_ROOT=/usr/local cmake -DCMAKE_BUILD_TYPE=Release  -DBoost_NO_BOOST_CMAKE=ON .. \
+	&& make -j `nproc` \
+	&& make install \
+	&& cd ../../../ && rm -rf rdiankov
+
+# Downgrade sympy
+RUN pip install --upgrade --user sympy==0.7.1
+
+
+# Install libtorch
+RUN mkdir -p ~/3rdparty && cd ~/3rdparty \
+	&& wget https://download.pytorch.org/libtorch/cu110/libtorch-cxx11-abi-shared-with-deps-1.7.1%2Bcu110.zip \
+	&& unzip libtorch-cxx11-abi-shared-with-deps-1.7.1+cu110.zip \
+	&& rm libtorch-cxx11-abi-shared-with-deps-1.7.1+cu110.zip
+
+FROM builder as dev
+# Install dev utils
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends gdb valgrind less vim tmux\
+    && rm -rf /var/lib/apt/lists/*
