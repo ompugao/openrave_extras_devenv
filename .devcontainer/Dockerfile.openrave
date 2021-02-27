@@ -7,7 +7,12 @@ FROM ${from} as builder
 #ENV SCCACHE_REDIS=${SCCACHE_REDIS}
 COPY --from=materialize/sccache:latest /usr/local/bin/sccache /usr/local/bin/sccache
 RUN pip install catkin-tools
-RUN apt update && apt -y install checkinstall
+# see https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/syntax.md
+RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+
+RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt apt update && apt -y install checkinstall
+# openrave extras dependencies
+RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt apt update && apt -y install libgflags-dev
 
 FROM builder as openrave_builder
 COPY openrave /workspace/openrave
@@ -19,18 +24,56 @@ RUN --mount=type=cache,target=/root/.cache/sccache/ mkdir build_openrave && cd b
 # # uncomment the following lines when you omit openrave/build directory from this layer
 # 	&& checkinstall --install=no --default\
 # 	&& cp *deb /tmp/
-# 
+
+# install missing ros packages
+{{ COPY_PACKAGEXML_DEPENDENCIES }}
+COPY remove_installed_pkgs.py /remove_installed_pkgs.py
+RUN --mount=type=cache,target=/root/.cache/sccache/ \
+	mkdir -p ~/ros_catkin_ws/common_pkgs_deps/src && cd ~/ros_catkin_ws/common_pkgs_deps \
+	&& . ~/ros_catkin_ws/parent/install_isolated/setup.sh \
+	&& rosdep keys --ignore-packages-from-source --from-paths ~/ros_catkin_ws/common_pkgs|grep -v boost|grep -v matplotlib|grep -v openrave|awk '{print}' ORS=' '|xargs rosinstall_generator --rosdistro $ROS_DISTRO --tar --deps > .rosinstall \
+	&& python /remove_installed_pkgs.py ~/ros_catkin_ws/parent/melodic-desktop-full.rosinstall ./.rosinstall .rosinstall.gen \
+	&& vcs import src < .rosinstall.gen \
+	&& BOOST_ROOT=/usr/local catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release -DBoost_NO_BOOST_CMAKE=ON -DBOOST_ROOT=/usr/local/ -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache\
+	&& rm -rf build_isolated
+
+RUN mkdir -p ~/ros_catkin_ws/common_pkgs
+COPY common_pkgs /root/ros_catkin_ws/common_pkgs/src
+RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt --mount=type=cache,target=/root/.cache/sccache/ \
+	cd ~/ros_catkin_ws/common_pkgs \
+	&& . ~/ros_catkin_ws/common_pkgs_deps/install_isolated/setup.sh \
+	&& apt-get update \
+	&& catkin config --init --extend ~/ros_catkin_ws/common_pkgs_deps/install_isolated/ \
+	&& BOOST_ROOT=/usr/local catkin build --verbose --no-status -DCMAKE_BUILD_TYPE=$ROS_BUILD_TYPE -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache \
+	&& rm build logs -rf
+	#&& rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y -r \
+
+# Install OpenRAVE Extras
+COPY openrave_extras /workspace/openrave_extras
+RUN --mount=type=cache,target=/root/.cache/sccache/ mkdir build_extras && cd build_extras \
+	&& . ~/ros_catkin_ws/common_pkgs/devel/setup.sh \
+	&& catkin config --init --extend ~/ros_catkin_ws/common_pkgs/devel/ \
+  	&& BOOST_ROOT=/usr/local cmake -DODE_USE_MULTITHREAD=ON -DCMAKE_CXX_STANDARD=11 -DCMAKE_BUILD_TYPE=$OPENRAVE_BUILD_TYPE -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DCMAKE_PREFIX_PATH=~/3rdparty/libtorch -DOpenRAVE_SOURCE_ROOT=/workspace/openrave -DCOMPILE_ROS_MODULES=ON -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache /workspace/openrave_extras \
+	&& make -j `nproc` \
+	&& make install 
+ENV OPENRAVE_PLUGINS=$OPENRAVE_PLUGINS:/usr/local/lib/openrave_extras_plugins
+
 # FROM builder as main
 # COPY --from=openrave_builder /tmp/*deb /tmp
 # RUN dpkg -i /tmp/*deb && rm /tmp/*deb
 RUN mkdir -p ~/ros_catkin_ws/dev
 COPY catkin_ws /root/ros_catkin_ws/dev/src
 RUN --mount=type=cache,target=/root/.cache/sccache/ cd ~/ros_catkin_ws/dev \
-	&& . ~/ros_catkin_ws/parent/install_isolated/setup.sh \
+	&& . ~/ros_catkin_ws/common_pkgs/devel/setup.sh \
 	&& BOOST_ROOT=/usr/local catkin build --verbose --no-status -DCMAKE_BUILD_TYPE=$ROS_BUILD_TYPE -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache 
 	# && rm build logs -rf
 
+RUN --mount=id=packagexml-build-cache,type=cache,target=/tmp/builder,uid=1000 \
+	find ./ -name "package.xml" |xargs -I{} cp --parents {} /tmp/builder/packages/
+
+COPY .devcontainer/entrypoint.sh /entrypoint.sh
+ENTRYPOINT entrypoint.sh
 # FROM ${from}
 # COPY --from=openrave_builder /tmp/*deb /tmp
 # COPY --from=ros_builder catkin_ws/devel catkin_ws/devel
-# RUN dpkg -i /tmp/*deb && rm /tmp/*deb
+#

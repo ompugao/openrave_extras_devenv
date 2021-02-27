@@ -13,8 +13,9 @@ RUN apt-get update \
 		libmpfi-dev  libmpfr-dev liboctave-dev libode-dev libogg-dev libpcre3-dev       \
 		libqhull-dev libswscale-dev libtinyxml-dev libvorbis-dev libx264-dev            \
 		libxml2-dev libxvidcore-dev libbz2-dev libsoqt-dev-common libsoqt4-dev \
-		libccd-dev liblog4cxx-dev libminizip-dev octomap-tools \
+		libccd-dev liblog4cxx-dev libminizip-dev octomap-tools liboctomap-dev\
     && rm -rf /var/lib/apt/lists/*
+	# liboctomap-dev is for fcl with octomap support
 
 # Install rapidjson
 RUN mkdir -p ~/3rdparty \

@@ -6,7 +6,7 @@ services:
     image: ompugao/openrave:melodic-desktop-full-cudnn8-gl
     build: 
       context: ..
-      dockerfile: .devcontainer/Dockerfile.openrave
+      dockerfile: .devcontainer/Dockerfile.openrave.gen
       args:
         from: ompugao/openrave-deps:melodic-desktop-full-cudnn8-gl
 

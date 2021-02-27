@@ -74,9 +74,43 @@ RUN BOOST_SRC_DIR=~/3rdparty/boost_1_58_0 \
     && ./b2 -j `nproc` install threading=multi \
 	&& cd .. && rm -rf ${BOOST_SRC_DIR} ${BOOST_SRC_DIR}.tar.gz
 
+# Install PCL
+RUN apt-get update \
+	&& apt -y install libflann-dev libvtk7-dev libvtk7-java libvtk7-jni libusb-dev git \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN git config --global user.email "fujii.shohei@gmail.com"
+RUN git config --global user.name "Shohei Fujii"
+
+RUN mkdir -p ~/3rdparty && cd ~/3rdparty \
+	&& git clone https://github.com/PointCloudLibrary/pcl \
+	&& cd pcl && git checkout pcl-1.10.0 \
+	&& mkdir build && cd build \
+  	&& BOOST_ROOT=/usr/local cmake -DCMAKE_BUILD_TYPE=Release -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DBUILD_CUDA=OFF -DBUILD_GPU=OFF -DBUILD_global_tests=OFF .. \
+	&& make -j $(nproc) \
+	&& make install \
+	&& cd ../../ && rm -rf pcl
+	
+# Install Ogre
+RUN apt-get update \
+	&& apt -y install libgles2-mesa-dev libsdl2-dev libxt-dev libxaw7-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p ~/3rdparty && cd ~/3rdparty \
+	&& wget -q https://github.com/OGRECave/ogre/archive/v1.9.1.tar.gz \
+	&& tar axvf v1.9.1.tar.gz\
+	&& cd ogre-1.9.1 \
+	&& mkdir build && cd build \
+  	&& BOOST_ROOT=/usr/local cmake -DCMAKE_BUILD_TYPE=Release -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/  -DOGRE_BUILD_TOOLS=OFF -DOGRE_BUILD_DOCS=OFF -DOGRE_INSTALL_SAMPLES=OFF .. \
+	&& make -j $(nproc) \
+	&& make install \
+	&& cd ../../ && rm -rf ogre-1.9.1 v1.9.1.tar.gz
+
+# && wget -q https://github.com/OGRECave/ogre/archive/v1-9-0.tar.gz 
+#
 RUN cd ~/ros_catkin_ws/parent \
 	&& BOOST_ROOT=/usr/local ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release -DBoost_NO_BOOST_CMAKE=ON \
-	&& rm -rf ./build_isolated
+ 	&& rm -rf ./build_isolated
 
 ENV NVIDIA_VISIBLE_DEVICES \
     ${NVIDIA_VISIBLE_DEVICES:-all}
