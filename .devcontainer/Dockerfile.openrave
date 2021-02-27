@@ -12,19 +12,6 @@ RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloa
 
 RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt apt update && apt -y install checkinstall
 
-FROM builder as cmake_builder
-RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt apt update \
-	&& apt -y install build-essential libssl-dev 
-RUN mkdir -p ~/3rdparty \
-	&& cd ~/3rdparty \
-	&& wget -q https://github.com/Kitware/CMake/releases/download/v3.16.5/cmake-3.16.5.tar.gz \
-	&& tar -zxvf cmake-3.16.5.tar.gz \
-	&& cd cmake-3.16.5 \
-	&& ./bootstrap \
-	&& make -j $(nproc) \
- 	&& checkinstall --pkgname=cmake --pkgversion=3.16.5 --install=no --default \
- 	&& cp *deb /tmp/
-
 FROM builder as openrave_builder
 COPY openrave /workspace/openrave
 # Install OpenRAVE
@@ -62,8 +49,6 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
 # openrave extras dependencies
 RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt apt update && apt -y install libgflags-dev libgoogle-glog-dev
 COPY openrave_extras /workspace/openrave_extras
-COPY --from=cmake_builder /tmp/*deb /tmp
-RUN dpkg -i /tmp/*deb && rm /tmp/*deb
 RUN --mount=type=cache,target=/root/.cache/sccache/ mkdir build_extras && cd build_extras \
 	&& /bin/bash -c "source ~/ros_catkin_ws/common_pkgs/devel/setup.bash ; \
   	BOOST_ROOT=/usr/local cmake -DODE_USE_MULTITHREAD=ON -DCMAKE_CXX_STANDARD=11 -DCMAKE_BUILD_TYPE=$OPENRAVE_BUILD_TYPE -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DCMAKE_PREFIX_PATH=~/3rdparty/libtorch -DOpenRAVE_SOURCE_ROOT=/workspace/openrave -DCOMPILE_ROS_MODULES=ON -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache /workspace/openrave_extras \

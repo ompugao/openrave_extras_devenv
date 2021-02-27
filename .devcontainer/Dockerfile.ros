@@ -49,6 +49,20 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 RUN pip install -U setuptools pip
 RUN pip install -U rosdep rosinstall_generator vcstool rosinstall
 
+# install newer cmake
+RUN apt-get update \
+	&& apt-get -y install --no-install-recommends build-essential libssl-dev wget \
+    && rm -rf /var/lib/apt/lists/*
+RUN mkdir -p ~/3rdparty \
+	&& cd ~/3rdparty \
+	&& wget -q https://github.com/Kitware/CMake/releases/download/v3.16.5/cmake-3.16.5.tar.gz \
+	&& tar -zxvf cmake-3.16.5.tar.gz \
+	&& cd cmake-3.16.5 \
+	&& ./bootstrap \
+	&& make -j $(nproc) \
+	&& make install \
+	&& cd .. && rm -rf cmake-3.16.5
+
 ENV ROS_DISTRO melodic
 
 # bootstrap rosdep
@@ -62,8 +76,6 @@ RUN mkdir -p ~/ros_catkin_ws/parent && cd ~/ros_catkin_ws/parent && mkdir src \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Install boost 1.58 from source
-RUN apt-get update && apt-get install -y --no-install-recommends wget \
-    && rm -rf /var/lib/apt/lists/*
 RUN BOOST_SRC_DIR=~/3rdparty/boost_1_58_0 \
     && mkdir -p ~/3rdparty; cd ~/3rdparty \
     && wget http://sourceforge.net/projects/boost/files/boost/1.58.0/boost_1_58_0.tar.gz -O ${BOOST_SRC_DIR}.tar.gz \
