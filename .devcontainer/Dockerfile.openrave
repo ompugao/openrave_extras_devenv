@@ -11,8 +11,19 @@ RUN pip install catkin-tools
 RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
 
 RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt apt update && apt -y install checkinstall
-# openrave extras dependencies
-RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt apt update && apt -y install libgflags-dev
+
+FROM builder as cmake_builder
+RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt apt update \
+	&& apt -y install build-essential libssl-dev 
+RUN mkdir -p ~/3rdparty \
+	&& cd ~/3rdparty \
+	&& wget -q https://github.com/Kitware/CMake/releases/download/v3.16.5/cmake-3.16.5.tar.gz \
+	&& tar -zxvf cmake-3.16.5.tar.gz \
+	&& cd cmake-3.16.5 \
+	&& ./bootstrap \
+	&& make -j $(nproc) \
+ 	&& checkinstall --pkgname=cmake --pkgversion=3.16.5 --install=no --default \
+ 	&& cp *deb /tmp/
 
 FROM builder as openrave_builder
 COPY openrave /workspace/openrave
@@ -43,19 +54,21 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
 	cd ~/ros_catkin_ws/common_pkgs \
 	&& . ~/ros_catkin_ws/common_pkgs_deps/install_isolated/setup.sh \
 	&& apt-get update \
-	&& catkin config --init --extend ~/ros_catkin_ws/common_pkgs_deps/install_isolated/ \
 	&& BOOST_ROOT=/usr/local catkin build --verbose --no-status -DCMAKE_BUILD_TYPE=$ROS_BUILD_TYPE -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache \
 	&& rm build logs -rf
 	#&& rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y -r \
 
 # Install OpenRAVE Extras
+# openrave extras dependencies
+RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt apt update && apt -y install libgflags-dev libgoogle-glog-dev
 COPY openrave_extras /workspace/openrave_extras
+COPY --from=cmake_builder /tmp/*deb /tmp
+RUN dpkg -i /tmp/*deb && rm /tmp/*deb
 RUN --mount=type=cache,target=/root/.cache/sccache/ mkdir build_extras && cd build_extras \
-	&& . ~/ros_catkin_ws/common_pkgs/devel/setup.sh \
-	&& catkin config --init --extend ~/ros_catkin_ws/common_pkgs/devel/ \
-  	&& BOOST_ROOT=/usr/local cmake -DODE_USE_MULTITHREAD=ON -DCMAKE_CXX_STANDARD=11 -DCMAKE_BUILD_TYPE=$OPENRAVE_BUILD_TYPE -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DCMAKE_PREFIX_PATH=~/3rdparty/libtorch -DOpenRAVE_SOURCE_ROOT=/workspace/openrave -DCOMPILE_ROS_MODULES=ON -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache /workspace/openrave_extras \
+	&& /bin/bash -c "source ~/ros_catkin_ws/common_pkgs/devel/setup.bash ; \
+  	BOOST_ROOT=/usr/local cmake -DODE_USE_MULTITHREAD=ON -DCMAKE_CXX_STANDARD=11 -DCMAKE_BUILD_TYPE=$OPENRAVE_BUILD_TYPE -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DCMAKE_PREFIX_PATH=~/3rdparty/libtorch -DOpenRAVE_SOURCE_ROOT=/workspace/openrave -DCOMPILE_ROS_MODULES=ON -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache /workspace/openrave_extras \
 	&& make -j `nproc` \
-	&& make install 
+	&& make install"
 ENV OPENRAVE_PLUGINS=$OPENRAVE_PLUGINS:/usr/local/lib/openrave_extras_plugins
 
 # FROM builder as main
@@ -68,12 +81,6 @@ RUN --mount=type=cache,target=/root/.cache/sccache/ cd ~/ros_catkin_ws/dev \
 	&& BOOST_ROOT=/usr/local catkin build --verbose --no-status -DCMAKE_BUILD_TYPE=$ROS_BUILD_TYPE -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache 
 	# && rm build logs -rf
 
-RUN --mount=id=packagexml-build-cache,type=cache,target=/tmp/builder,uid=1000 \
-	find ./ -name "package.xml" |xargs -I{} cp --parents {} /tmp/builder/packages/
-
 COPY .devcontainer/entrypoint.sh /entrypoint.sh
-ENTRYPOINT entrypoint.sh
-# FROM ${from}
-# COPY --from=openrave_builder /tmp/*deb /tmp
-# COPY --from=ros_builder catkin_ws/devel catkin_ws/devel
-#
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["bash"]
