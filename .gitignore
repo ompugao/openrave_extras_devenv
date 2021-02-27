@@ -2,3 +2,5 @@ openrave
 core
 catkin_ws
 .devcontainer/.bash_history
+.devcontainer/.ipython
+.devcontainer/.openrave
