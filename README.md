@@ -32,6 +32,6 @@ git clone https://github.com/fsuarez6/bcap/  common_pkgs/fsuarez6/bcap
 # when you build or run
 bash ./set_xauth.sh
 python gen_dockerfile.py .devcontainer/Dockerfile.openrave .devcontainer/Dockerfile.openrave.gen
-# run vscode, or
-cd .devcontainer/ && docker-compose up
+# run vscode and open in Remote Dev Container, or
+cd .devcontainer/ && bash build-deps.sh
 ```
