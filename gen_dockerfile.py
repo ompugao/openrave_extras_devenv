@@ -7,6 +7,8 @@ import sys
 parser = argparse.ArgumentParser()
 parser.add_argument('template', type=str)
 parser.add_argument('out', type=str)
+parser.add_argument('--OPENRAVE_BUILD_TYPE', type=str, default='Release')
+parser.add_argument('--ROS_BUILD_TYPE', type=str, default='Release')
 args = parser.parse_args()
 
 templateabspath = os.path.abspath(args.template)
@@ -28,7 +30,9 @@ text = '\n'.join(lines)
 
 with open(templateabspath, 'r') as f:
     t = jinja2.Template(''.join(f.readlines()))
-    replaced = t.render(COPY_PACKAGEXML_DEPENDENCIES=text)
+    replaced = t.render(COPY_PACKAGEXML_DEPENDENCIES=text,
+            OPENRAVE_BUILD_TYPE=args.OPENRAVE_BUILD_TYPE,
+            ROS_BUILD_TYPE=args.ROS_BUILD_TYPE)
 
 with open(outabspath, 'w') as f:
     f.write(replaced)
