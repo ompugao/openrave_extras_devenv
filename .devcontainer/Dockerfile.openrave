@@ -54,6 +54,7 @@ RUN --mount=type=cache,target=/root/.cache/sccache/ mkdir build_extras && cd bui
   	BOOST_ROOT=/usr/local cmake -DODE_USE_MULTITHREAD=ON -DCMAKE_CXX_STANDARD=11 -DCMAKE_BUILD_TYPE=$OPENRAVE_BUILD_TYPE -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DCMAKE_PREFIX_PATH=~/3rdparty/libtorch -DOpenRAVE_SOURCE_ROOT=/workspace/openrave -DCOMPILE_ROS_MODULES=ON -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache /workspace/openrave_extras \
 	&& make -j `nproc` \
 	&& make install"
+RUN pip install -r /workspace/openrave_extras/scripts/requirement2.7.txt
 ENV OPENRAVE_PLUGINS=$OPENRAVE_PLUGINS:/usr/local/lib/openrave_extras_plugins
 
 # FROM builder as main
@@ -67,5 +68,7 @@ RUN --mount=type=cache,target=/root/.cache/sccache/ cd ~/ros_catkin_ws/dev \
 	# && rm build logs -rf
 
 COPY .devcontainer/entrypoint.sh /entrypoint.sh
+COPY .devcontainer/.bashrc /root/.bashrc
+COPY .devcontainer/.tmux.conf /root/.tmux.conf
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["bash"]
