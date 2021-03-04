@@ -64,8 +64,8 @@ ENV OPENRAVE_PLUGINS=$OPENRAVE_PLUGINS:/usr/local/lib/openrave_extras_plugins
 RUN mkdir -p ~/ros_catkin_ws/dev
 COPY catkin_ws /root/ros_catkin_ws/dev/src
 RUN --mount=type=cache,target=/root/.cache/sccache/ cd ~/ros_catkin_ws/dev \
-	&& . ~/ros_catkin_ws/common_pkgs/devel/setup.sh \
-	&& BOOST_ROOT=/usr/local catkin build --verbose --no-status -DCMAKE_BUILD_TYPE={{ROS_BUILD_TYPE}} -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache 
+	&& /bin/bash -c "source ~/ros_catkin_ws/common_pkgs/devel/setup.bash; \
+	BOOST_ROOT=/usr/local catkin build --verbose --no-status -DCMAKE_BUILD_TYPE={{ROS_BUILD_TYPE}} -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache"
 	# && rm build logs -rf
 
 COPY .devcontainer/entrypoint.sh /entrypoint.sh
