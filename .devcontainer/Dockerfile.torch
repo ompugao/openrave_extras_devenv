@@ -1,0 +1,31 @@
+FROM nvidia/cuda:11.0.3-cudnn8-devel-ubuntu18.04
+
+MAINTAINER Shohei Fujii <fujii.shohei@gmail.com>
+
+# -------
+# libglvnd support
+
+# taken from
+# https://gitlab.com/nvidia/container-images/opengl/blob/ubuntu18.04/glvnd/devel/Dockerfile
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        pkg-config \
+        libglvnd-dev  \
+        libgl1-mesa-dev \
+        libegl1-mesa-dev \
+        libgles2-mesa-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# -------
+
+ENV TZ=Asia/Tokyo
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	python3 python3-pip python3-setuptools python3-wheel python3-dev\
+	&& rm -rf /var/lib/apt/lists/*
+
+# see https://pytorch.org/get-started/previous-versions/
+RUN pip3 install ipython numpy scipy tensorboard tqdm grpcio grpcio-tools && pip cache remove
+RUN pip3 install torch==1.7.1+cu110 torchvision==0.8.2+cu110 -f https://download.pytorch.org/whl/torch_stable.html && pip cache remove
+
+
