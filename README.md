@@ -26,7 +26,7 @@ git clone https://github.com/personalrobotics/openrave_catkin common_pkgs/person
 git clone https://github.com/ompugao/or_rviz common_pkgs/ompugao/or_rviz -b hotfix/disable_rviz_viewer
 git clone https://github.com/ompugao/openrave_extras_msgs common_pkgs/ompugao/openrave_extras_msgs
 git clone https://github.com/crigroup/osr_course_pkgs common_pkgs/crigroup/osr_course_pkgs
-git clone https://github.com/quanguonet/denso_common common_pkgs/quanguonet/denso_common
+git clone https://github.com/quangounet/denso_common common_pkgs/quangounet/denso_common
 git clone https://github.com/fsuarez6/bcap/  common_pkgs/fsuarez6/bcap
 
 # when you build or run
