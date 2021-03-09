@@ -72,12 +72,9 @@ RUN mkdir -p ~/3rdparty && cd ~/3rdparty \
 # Downgrade sympy
 RUN pip install --upgrade --user sympy==0.7.1
 
-
 # Install libtorch
-RUN mkdir -p ~/3rdparty && cd ~/3rdparty \
-	&& wget https://download.pytorch.org/libtorch/cu110/libtorch-cxx11-abi-shared-with-deps-1.7.1%2Bcu110.zip \
-	&& unzip libtorch-cxx11-abi-shared-with-deps-1.7.1+cu110.zip \
-	&& rm libtorch-cxx11-abi-shared-with-deps-1.7.1+cu110.zip
+COPY install_libtorch.sh /install_libtorch.sh
+RUN bash /install_libtorch.sh && rm /install_libtorch.sh
 
 FROM builder as dev
 # Install dev utils

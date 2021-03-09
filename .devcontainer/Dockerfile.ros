@@ -1,5 +1,8 @@
 #FROM osrf/ros:melodic-desktop-full
-FROM nvidia/cuda:11.0.3-cudnn8-devel-ubuntu18.04
+ARG from
+FROM ${from}
+#nvidia/cuda:11.0.3-cudnn8-devel-ubuntu18.04
+#nvidia/cuda:10.2-cudnn8-devel-ubuntu18.04
 
 MAINTAINER Shohei Fujii <fujii.shohei@gmail.com>
 
