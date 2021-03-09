@@ -20,7 +20,8 @@ except subprocess.CalledProcessError as e:
     print('Could not find git project root dir.')
     sys.exit(1)
 os.chdir(rootdir)
-packagexmls = filter(lambda line: line != '', subprocess.check_output('find . -name "package.xml" |grep -v openrave/package.xml', shell=True).split('\n'))
+packagexmls = filter(lambda line: line != '', subprocess.check_output('find . -name "package.xml" |grep -v openrave/package.xml', shell=True).decode("utf-8").split('\n'))
+
 lines = []
 
 for packagexml in packagexmls:
