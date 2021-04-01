@@ -19,7 +19,9 @@ function semverParseInto() {
 CUDA_VERSION="${1:-11.0.3}"
 semverParseInto $CUDA_VERSION cuda_major cuda_minor cuda_patch cuda_special
 echo "$CUDA_VERSION -> M: $cuda_major m:$cuda_minor p:$cuda_patch s:$cuda_special"
-if [ $cuda_major -eq 10 ] && [ $cuda_minor -eq 2 ]; then
+if [ $cuda_major -eq 10 ] && [ $cuda_minor -eq 0 ]; then
+	baseimage="nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04"
+elif [ $cuda_major -eq 10 ] && [ $cuda_minor -eq 2 ]; then
 	baseimage="nvidia/cuda:10.2-cudnn8-devel-ubuntu18.04"
 elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 0 ]; then
 	baseimage="nvidia/cuda:11.0.3-cudnn8-devel-ubuntu18.04"
