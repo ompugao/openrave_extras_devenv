@@ -17,7 +17,7 @@ FROM builder as openrave_builder
 COPY openrave /workspace/openrave
 # Install OpenRAVE
 RUN --mount=type=cache,target=/root/.cache/sccache/ mkdir build_openrave && cd build_openrave \
-  	&& BOOST_ROOT=/usr/local cmake -DODE_USE_MULTITHREAD=ON -DCMAKE_CXX_STANDARD=11 -DOSG_DIR=/usr/local/lib64/ -DCMAKE_BUILD_TYPE={{OPENRAVE_BUILD_TYPE}} -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DFCL_USE_STATISTICS=ON -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache /workspace/openrave \
+	&& BOOST_ROOT=/usr/local cmake -DODE_USE_MULTITHREAD=ON -DCMAKE_CXX_STANDARD=11 -DOSG_DIR=/usr/local/lib64/ -DCMAKE_BUILD_TYPE={{OPENRAVE_BUILD_TYPE}} -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DFCL_USE_STATISTICS=OFF -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache /workspace/openrave \
 	&& make -j `nproc` \
 	&& make install 
 # # uncomment the following lines when you omit openrave/build directory from this layer
@@ -33,7 +33,7 @@ RUN --mount=type=cache,target=/root/.cache/sccache/ \
 	&& rosdep keys --ignore-packages-from-source --from-paths ~/ros_catkin_ws/common_pkgs|grep -v boost|grep -v matplotlib|grep -v openrave|awk '{print}' ORS=' '|xargs rosinstall_generator --rosdistro $ROS_DISTRO --tar --deps > .rosinstall \
 	&& python /remove_installed_pkgs.py ~/ros_catkin_ws/parent/melodic-desktop-full.rosinstall ./.rosinstall .rosinstall.gen \
 	&& vcs import src < .rosinstall.gen \
-	&& BOOST_ROOT=/usr/local catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release -DBoost_NO_BOOST_CMAKE=ON -DBOOST_ROOT=/usr/local/ -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache\
+	&& BOOST_ROOT=/usr/local catkin_make_isolated -j `nproc` --install -DCMAKE_BUILD_TYPE=Release -DBoost_NO_BOOST_CMAKE=ON -DBOOST_ROOT=/usr/local/ -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache\
 	&& rm -rf build_isolated
 
 RUN mkdir -p ~/ros_catkin_ws/common_pkgs

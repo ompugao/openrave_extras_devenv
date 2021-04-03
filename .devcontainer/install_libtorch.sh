@@ -27,5 +27,9 @@ elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 0 ]; then
 	wget https://download.pytorch.org/libtorch/cu110/libtorch-cxx11-abi-shared-with-deps-1.7.1%2Bcu110.zip
 	unzip libtorch-cxx11-abi-shared-with-deps-1.7.1+cu110.zip
 	rm libtorch-cxx11-abi-shared-with-deps-1.7.1+cu110.zip
+elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 1 ]; then
+	wget https://download.pytorch.org/libtorch/cu111/libtorch-cxx11-abi-shared-with-deps-1.8.1%2Bcu111.zip
+	unzip libtorch-cxx11-abi-shared-with-deps-1.8.1+cu111.zip
+	rm libtorch-cxx11-abi-shared-with-deps-1.8.1+cu111.zip
 fi
 

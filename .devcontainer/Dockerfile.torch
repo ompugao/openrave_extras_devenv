@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.0.3-cudnn8-devel-ubuntu18.04
+FROM nvidia/cuda:11.1.1-cudnn8-devel-ubuntu18.04
 
 MAINTAINER Shohei Fujii <fujii.shohei@gmail.com>
 
@@ -27,7 +27,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # see https://pytorch.org/get-started/previous-versions/
 RUN pip3 install --no-cache-dir -U setuptools
 RUN pip3 install --no-cache-dir ipython numpy scipy tensorboard tqdm grpcio grpcio-tools
-RUN pip3 install --no-cache-dir torch==1.7.1+cu110 torchvision==0.8.2+cu110 -f https://download.pytorch.org/whl/torch_stable.html
+#RUN pip3 install --no-cache-dir torch==1.7.1+cu110 torchvision==0.8.2+cu110 -f https://download.pytorch.org/whl/torch_stable.html
+RUN pip3 install --no-cache-dir torch==1.8.1+cu111 torchvision==0.9.1+cu111 torchaudio==0.8.1 -f https://download.pytorch.org/whl/torch_stable.html
+
 RUN pip3 install --no-cache-dir click
 # https://github.com/ipython/ipython/issues/12740
 RUN pip3 install --no-cache-dir jedi==0.17.2

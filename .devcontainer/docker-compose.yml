@@ -53,7 +53,7 @@ services:
 
   torch:
     # Using a Dockerfile is optional, but included for completeness.
-    image: ompugao/pytorch:cuda11.0-cudnn8
+    image: ompugao/pytorch:cuda11.1-cudnn8
     build: 
       context: ..
       dockerfile: .devcontainer/Dockerfile.torch
