@@ -29,6 +29,9 @@ git clone https://github.com/crigroup/osr_course_pkgs common_pkgs/crigroup/osr_c
 git clone https://github.com/quangounet/denso_common common_pkgs/quangounet/denso_common
 git clone https://github.com/fsuarez6/bcap/  common_pkgs/fsuarez6/bcap
 
+# put whatever ros packages indenpendant to openrave into catkin_ws
+# git clone https://github.com/whatever/package catkin_ws/whatever/package
+
 # when you build or run
 bash ./set_xauth.sh
 python gen_dockerfile.py .devcontainer/Dockerfile.openrave .devcontainer/Dockerfile.openrave.gen
