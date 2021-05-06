@@ -52,7 +52,7 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
 COPY openrave_extras /workspace/openrave_extras
 RUN --mount=type=cache,target=/root/.cache/sccache/ mkdir build_extras && cd build_extras \
 	&& /bin/bash -c "source ~/ros_catkin_ws/common_pkgs/devel/setup.bash ; \
-  	BOOST_ROOT=/usr/local cmake -DODE_USE_MULTITHREAD=ON -DCMAKE_CXX_STANDARD=11 -DCMAKE_BUILD_TYPE={{OPENRAVE_BUILD_TYPE}} -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DCMAKE_PREFIX_PATH=~/3rdparty/libtorch -DOpenRAVE_SOURCE_ROOT=/workspace/openrave -DCOMPILE_ROS_MODULES=ON -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache /workspace/openrave_extras \
+  	BOOST_ROOT=/usr/local cmake -DODE_USE_MULTITHREAD=ON -DCMAKE_CXX_STANDARD=11 -DCMAKE_BUILD_TYPE={{OPENRAVE_BUILD_TYPE}} -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DCMAKE_PREFIX_PATH=~/3rdparty/libtorch -DOpenRAVE_SOURCE_ROOT=/workspace/openrave -DCOMPILE_ROS_MODULES=ON -DCOMPILE_AZURE_KINECT_SENSOR=ON -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache /workspace/openrave_extras \
 	&& make -j `nproc` \
 	&& make install"
 RUN --mount=type=cache,target=/root/.cache/pip pip install -r /workspace/openrave_extras/scripts/requirement2.7.txt
