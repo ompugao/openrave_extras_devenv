@@ -28,6 +28,7 @@ git clone https://github.com/ompugao/openrave_extras_msgs common_pkgs/ompugao/op
 git clone https://github.com/crigroup/osr_course_pkgs common_pkgs/crigroup/osr_course_pkgs
 git clone https://github.com/quangounet/denso_common common_pkgs/quangounet/denso_common
 git clone https://github.com/fsuarez6/bcap/  common_pkgs/fsuarez6/bcap
+git clone https://github.com/code-iai/iai_kinect2.git common_pkgs/code-iai/iai_kinect2
 
 # when you build or run
 bash ./set_xauth.sh
