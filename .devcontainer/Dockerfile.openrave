@@ -41,7 +41,6 @@ COPY common_pkgs /root/ros_catkin_ws/common_pkgs/src
 RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt --mount=type=cache,target=/root/.cache/sccache/ \
 	cd ~/ros_catkin_ws/common_pkgs \
 	&& . ~/ros_catkin_ws/common_pkgs_deps/install_isolated/setup.sh \
-	&& apt-get update \
 	&& BOOST_ROOT=/usr/local catkin build --verbose --no-status -DCMAKE_BUILD_TYPE={{ROS_BUILD_TYPE}} -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache \
 	&& rm build logs -rf
 	#&& rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -y -r \
