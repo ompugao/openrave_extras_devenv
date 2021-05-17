@@ -1,4 +1,4 @@
-# OpenRAVE + ROS melodic docker environment
+https://github.com/ompugao/openrave_extras_devenv/# OpenRAVE + ROS melodic docker environment
 
 ![openrave on vscode remote container](https://i.gyazo.com/d856a7f339f7e77fd52a7bab6cda6983.png)
 ## Prerequiresites
@@ -19,6 +19,7 @@ docker buildx install
 cd path/to/openrave_docker_development_template
 touch .devcontainer/.bash_history
 git clone https://github.com/rdiankov/openrave
+git clone https://github.com/ompugao/openrave_extras
 
 # put whatever ros packages which depends only on openrave into common_pkgs
 git clone https://github.com/personalrobotics/openrave_catkin common_pkgs/personalrobotics/openrave_catkin
