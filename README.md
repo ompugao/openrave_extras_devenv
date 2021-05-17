@@ -32,7 +32,7 @@ git clone https://github.com/code-iai/iai_kinect2.git common_pkgs/code-iai/iai_k
 
 # when you build or run
 bash ./set_xauth.sh
-python gen_dockerfile.py .devcontainer/Dockerfile.openrave .devcontainer/Dockerfile.openrave.gen
+python3 gen_dockerfile.py .devcontainer/Dockerfile.openrave .devcontainer/Dockerfile.openrave.gen
 # run vscode and open in Remote Dev Container, or
 cd .devcontainer/ && bash build-deps.sh
 ```
