@@ -127,6 +127,38 @@ RUN cd ~/ros_catkin_ws/parent \
 	&& BOOST_ROOT=/usr/local ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release -DBoost_NO_BOOST_CMAKE=ON \
  	&& rm -rf ./build_isolated
 
+# azure kinect
+RUN apt -y update && apt -y install curl software-properties-common \
+	&& rm -rf /var/lib/apt/lists/*
+RUN curl -sSL https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+RUN apt-add-repository https://packages.microsoft.com/ubuntu/18.04/prod \
+	&& apt -y update \
+	&& ACCEPT_EULA=Y apt install -y k4a-tools libk4a1.4-dev \
+	&& rm -rf /var/lib/apt/lists/*
+
+
+ARG cuda_major
+ARG cuda_minor
+# libfreenect2
+# install cuda-samples for helper_math.h
+RUN apt update && apt install -y --no-install-recommends \
+	libusb-1.0.0-dev \
+	libturbojpeg0-dev \
+	libglfw3-dev \
+	libopenni2-dev \
+	cuda-samples-${cuda_major}-${cuda_minor} \
+	&& rm -rf /var/lib/apt/lists/*
+
+# enable c++11 and cuda 
+RUN cd ~/3rdparty \
+	&& git clone https://github.com/OpenKinect/libfreenect2.git OpenKinect/libfreenect2 \
+	&& cd OpenKinect/libfreenect2 && mkdir build && cd build \
+	&& BOOST_ROOT=/usr/local cmake -DCMAKE_BUILD_TYPE=Release  -DBoost_NO_BOOST_CMAKE=ON .. -DENABLE_CXX11=ON -DCUDA_PROPAGATE_HOST_FLAGS=off \
+	&& make -j `nproc` \
+	&& make install \
+	&& cp ../platform/linux/udev/90-kinect2.rules /etc/udev/rules.d/ \
+	&& cd ../../../ && rm OpenKinect -rf
+
 ENV NVIDIA_VISIBLE_DEVICES \
     ${NVIDIA_VISIBLE_DEVICES:-all}
 ENV NVIDIA_DRIVER_CAPABILITIES \

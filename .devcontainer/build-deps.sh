@@ -16,7 +16,7 @@ function semverParseInto() {
     eval $5=`echo $1 | sed -e "s#$RE#\4#"`
 }
 
-CUDA_VERSION="${1:-11.0.3}"
+CUDA_VERSION="${1:-11.1.1}"
 semverParseInto $CUDA_VERSION cuda_major cuda_minor cuda_patch cuda_special
 echo "$CUDA_VERSION -> M: $cuda_major m:$cuda_minor p:$cuda_patch s:$cuda_special"
 if [ $cuda_major -eq 10 ] && [ $cuda_minor -eq 0 ]; then
@@ -25,12 +25,14 @@ elif [ $cuda_major -eq 10 ] && [ $cuda_minor -eq 2 ]; then
 	baseimage="nvidia/cuda:10.2-cudnn8-devel-ubuntu18.04"
 elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 0 ]; then
 	baseimage="nvidia/cuda:11.0.3-cudnn8-devel-ubuntu18.04"
+elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 1 ]; then
+	baseimage="nvidia/cuda:11.1.1-cudnn8-devel-ubuntu18.04"
 else
 	echo "Unsupported CUDA Version: " $CUDA_VERSION
 	exit 1
 fi
 echo "baseimage: " $baseimage
 
-docker build -t ompugao/ros:melodic-desktop-full-cudnn8-gl -f Dockerfile.ros --build-arg from=$baseimage --progress=plain .
+docker build -t ompugao/ros:melodic-desktop-full-cudnn8-gl -f Dockerfile.ros --build-arg from=$baseimage --build-arg cuda_major=$cuda_major --build-arg cuda_minor=$cuda_minor --progress=plain .
 docker build -t ompugao/openrave-deps:melodic-desktop-full-cudnn8-gl -f Dockerfile.openrave-deps --target dev --build-arg from=ompugao/ros:melodic-desktop-full-cudnn8-gl . 
 docker-compose --project-name openrave_extras_devenv -f ./docker-compose.yml build
