@@ -1,2 +1,6 @@
 openrave_extras/data
-logs/
+openrave_extras/logs/
+openrave_extras/tags
+openrave_extras/scripts/logs*
+**/__pycache__
+**/*pyc
