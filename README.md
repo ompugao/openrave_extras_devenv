@@ -31,6 +31,9 @@ git clone https://github.com/quangounet/denso_common common_pkgs/quangounet/dens
 git clone https://github.com/fsuarez6/bcap/  common_pkgs/fsuarez6/bcap
 git clone https://github.com/code-iai/iai_kinect2.git common_pkgs/code-iai/iai_kinect2
 
+# put whatever ros packages indenpendant to openrave into catkin_ws
+# git clone https://github.com/whatever/package catkin_ws/whatever/package
+
 # when you build or run
 bash ./set_xauth.sh
 python3 gen_dockerfile.py .devcontainer/Dockerfile.openrave .devcontainer/Dockerfile.openrave.gen
