@@ -20,15 +20,15 @@ echo "$CUDA_VERSION -> M: $cuda_major m:$cuda_minor p:$cuda_patch s:$cuda_specia
 mkdir -p ~/3rdparty && cd ~/3rdparty
 # Install libtorch
 if [ $cuda_major -eq 10 ] && [ $cuda_minor -eq 2 ]; then
-	wget https://download.pytorch.org/libtorch/cu102/libtorch-cxx11-abi-shared-with-deps-1.7.1.zip
+	wget -q --show-progress --progress=bar:force:noscroll https://download.pytorch.org/libtorch/cu102/libtorch-cxx11-abi-shared-with-deps-1.7.1.zip
 	unzip libtorch-cxx11-abi-shared-with-deps-1.7.1.zip
 	rm libtorch-cxx11-abi-shared-with-deps-1.7.1.zip
 elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 0 ]; then
-	wget https://download.pytorch.org/libtorch/cu110/libtorch-cxx11-abi-shared-with-deps-1.7.1%2Bcu110.zip
+	wget -q --show-progress --progress=bar:force:noscroll https://download.pytorch.org/libtorch/cu110/libtorch-cxx11-abi-shared-with-deps-1.7.1%2Bcu110.zip
 	unzip libtorch-cxx11-abi-shared-with-deps-1.7.1+cu110.zip
 	rm libtorch-cxx11-abi-shared-with-deps-1.7.1+cu110.zip
 elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 1 ]; then
-	wget https://download.pytorch.org/libtorch/cu111/libtorch-cxx11-abi-shared-with-deps-1.8.1%2Bcu111.zip
+	wget -q --show-progress --progress=bar:force:noscroll https://download.pytorch.org/libtorch/cu111/libtorch-cxx11-abi-shared-with-deps-1.8.1%2Bcu111.zip
 	unzip libtorch-cxx11-abi-shared-with-deps-1.8.1+cu111.zip
 	rm libtorch-cxx11-abi-shared-with-deps-1.8.1+cu111.zip
 else
@@ -50,6 +50,8 @@ else
 	cd ..
 	rm -rf pytorch-build pytorch
 fi
+cp -r libtorch/* /usr/
+rm libtorch -rf
 
 # Removing sudo (1.8.21p2-3ubuntu1.4) ...                                              
 # You have asked that the sudo package be removed,                                       

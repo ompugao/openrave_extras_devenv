@@ -34,6 +34,24 @@ RUN pip3 install --no-cache-dir click
 # https://github.com/ipython/ipython/issues/12740
 RUN pip3 install --no-cache-dir jedi==0.17.2
 
+RUN apt-get update && apt-get install -y --no-install-recommends wget \
+	&& rm -rf /var/lib/apt/lists/*
+# install tensorrt
+# see https://github.com/NVIDIA/TensorRT/issues/792#issuecomment-839636240 for sed command execution
+# WARN: please keep in mind when you want to install nvidia/cuda-related packages
+RUN wget -q --show-progress --progress=bar:force:noscroll 'https://bit.ly/3Anko4s' -O nv-tensorrt-repo-ubuntu1804-cuda11.1-trt7.2.3.4-ga-20210226_1-1_amd64.deb \
+	&& dpkg -i nv-tensorrt-repo-ubuntu1804-cuda11.1-trt7.2.3.4-ga-20210226_1-1_amd64.deb \
+	&& apt -y update \
+	&& sed -i -e '/nvidia/ s/^#*/#/' /etc/apt/sources.list.d/cuda.list \
+	&& sed -i -e '/nvidia/ s/^#*/#/' /etc/apt/sources.list.d/nvidia-ml.list \
+	&& apt -y install tensorrt python3-libnvinfer \
+	&& rm -rf nv-tensorrt-repo-ubuntu1804-cuda11.1-trt7.2.3.4-ga-20210226_1-1_amd64.deb \
+    && rm -rf /var/lib/apt/lists/* \
+	&& rm -rf /var/nv-tensorrt-repo* /etc/apt/sources.list.d/nv-tensorrt-*
+
+RUN pip3 install --no-cache-dir https://github.com/NVIDIA/TRTorch/releases/download/v0.3.0/trtorch-0.3.0-cp36-cp36m-linux_x86_64.whl
+
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-11.3/lib64
 RUN apt-get update && apt-get install -y --no-install-recommends \
 	vim tmux cmake \
 	&& rm -rf /var/lib/apt/lists/*

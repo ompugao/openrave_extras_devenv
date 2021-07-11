@@ -64,7 +64,7 @@ RUN mkdir -p ~/3rdparty \
 	&& ./bootstrap \
 	&& make -j $(nproc) \
 	&& make install \
-	&& cd .. && rm -rf cmake-3.16.5
+	&& cd .. && rm -rf cmake-3.16.5 cmake-3.16.5.tar.gz
 
 ENV ROS_DISTRO melodic
 
