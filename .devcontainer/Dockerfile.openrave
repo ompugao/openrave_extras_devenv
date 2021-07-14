@@ -7,7 +7,7 @@ ARG from
 FROM ${from} as builder
 #ENV SCCACHE_REDIS=${SCCACHE_REDIS}
 COPY --from=materialize/sccache:latest /usr/local/bin/sccache /usr/local/bin/sccache
-RUN pip install catkin-tools
+RUN pip install --no-cache-dir catkin-tools
 # see https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/syntax.md
 RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
 
