@@ -40,8 +40,8 @@ else
 	apt update && apt install -y python3 python3-venv python3-pip
 	python3 -m venv libtorchbuildenv
 	source libtorchbuildenv/bin/activate
-	pip3 install --no-cache-dir dataclasses PyYAML
-	cmake -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_BUILD_TYPE:STRING=Release -DPYTHON_EXECUTABLE:PATH=`which python3` -DCMAKE_INSTALL_PREFIX:PATH=../libtorch ../pytorch
+	pip3 install --no-cache-dir dataclasses PyYAML numpy
+	cmake -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_BUILD_TYPE:STRING=Release -DPYTHON_EXECUTABLE:PATH=`which python3` -DCMAKE_INSTALL_PREFIX:PATH=../libtorch ../pytorch 
 	cmake --build . --target install -- -j $(nproc)
 	deactivate
 	apt remove -y python3 python3-venv python3-pip
