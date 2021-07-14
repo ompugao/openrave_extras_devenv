@@ -32,6 +32,9 @@ elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 1 ]; then
     wget -q --show-progress --progress=bar:force:noscroll https://bit.ly/3Anko4s -O nv-tensorrt-repo-ubuntu1804-cuda11.1-trt7.2.3.4-ga-20210226_1-1_amd64.deb
     dpkg -i nv-tensorrt-repo-ubuntu1804-cuda11.1-trt7.2.3.4-ga-20210226_1-1_amd64.deb
     rm nv-tensorrt-repo-ubuntu1804-cuda11.1-trt7.2.3.4-ga-20210226_1-1_amd64.deb
+else
+    echo 'not supported cuda version'
+    exit 0
 fi
 echo 'Done. Installing TensorRT packages...'
 
