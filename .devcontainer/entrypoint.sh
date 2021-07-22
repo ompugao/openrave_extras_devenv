@@ -18,5 +18,6 @@ osr_openrave_dir=$(rospack find osr_openrave 2>/dev/null)
 if [ $? -eq 0 ]; then
     export OPENRAVE_DATA=$OPENRAVE_DATA:$(rospack find osr_openrave)
 fi
+export OPENRAVE_DATA=$OPENRAVE_DATA:/workspace/openrave_extras
 
 exec "$@"
