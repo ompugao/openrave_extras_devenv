@@ -46,11 +46,11 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     python-pip \
     # python-rosdep \
     # python-rosinstall \
-    # python-vcstools \
+    python-vcstools \
     # python-rosinstall-generator \
     && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir -U setuptools pip
-RUN pip install --no-cache-dir -U rosdep rosinstall_generator vcstool rosinstall
+RUN pip install --no-cache-dir -U rosdep rosinstall_generator rosinstall #vcstool #vcstool supports only python3
 
 # install newer cmake
 RUN apt-get update \
