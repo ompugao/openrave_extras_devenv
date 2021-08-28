@@ -46,7 +46,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     python-pip \
     # python-rosdep \
     # python-rosinstall \
-    python-vcstools \
+    python-vcstool \
     # python-rosinstall-generator \
     && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir -U setuptools pip
