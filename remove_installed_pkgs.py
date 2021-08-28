@@ -23,7 +23,21 @@ filename = args.outfilename
 parentspecs = rosinstall.wstool.config_yaml.get_path_specs_from_uri(parent_rosinstall_uri)
 currentspecs = rosinstall.wstool.config_yaml.get_path_specs_from_uri(current_rosinstall_uri)
 pickup_names = set(spec.get_local_name() for spec in currentspecs) - set(spec.get_local_name() for spec in parentspecs)
+print("installing packages: %s"%([spec.get_local_name() for spec in currentspecs], ))
+print("installed packages: %s"%([spec.get_local_name() for spec in parentspecs], ))
+print('cleaned packages: %s'%pickup_names)
 d = {spec.get_local_name() : spec for spec in currentspecs}
+# FIXME common_pkgs_deps/src/eigenpy becomes empty
+from urlparse import urlparse
+o = urlparse(d['eigenpy'].get_uri())
+urlpaths = o.path.split('/')
+rosversion = urlpaths[-3]
+eigenpy_package = urlpaths[-2]
+eigenpy_version = o.path.split('/')[-1][:len('.tar.gz')]
+d['eigenpy'] = rosinstall.wstool.config_yaml.PathSpec(local_name=d['eigenpy'].get_local_name(),
+        scmtype='tar',
+        uri=d['eigenpy'].get_uri(),
+        version='eigenpy-ros-release-release-%s-%s-%s'%(rosversion, eigenpy_package,eigenpy_version))
 pickup_specs = []
 for n in pickup_names:
     pickup_specs.append(d[n])
