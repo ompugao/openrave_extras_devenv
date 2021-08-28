@@ -98,4 +98,6 @@ fi
 #    . /etc/bash_completion
 #fi
 
-source /entrypoint.sh
+if [ -f /entrypoint.sh ] ; then
+	source /entrypoint.sh
+fi
