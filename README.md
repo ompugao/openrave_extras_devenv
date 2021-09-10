@@ -24,12 +24,12 @@ git clone https://github.com/ompugao/openrave_extras
 # put whatever ros packages which depends only on openrave into common_pkgs
 git clone https://github.com/personalrobotics/openrave_catkin common_pkgs/personalrobotics/openrave_catkin
 #git clone https://github.com/personalrobotics/or_rviz catkin_ws/personalrobotics/or_rviz
-git clone https://github.com/ompugao/or_rviz common_pkgs/ompugao/or_rviz -b hotfix/disable_rviz_viewer
+git clone https://github.com/ompugao/or_rviz common_pkgs/ompugao/or_rviz -b feature/viewer_drawboxarray
 git clone https://github.com/ompugao/openrave_extras_msgs common_pkgs/ompugao/openrave_extras_msgs
 git clone https://github.com/crigroup/osr_course_pkgs common_pkgs/crigroup/osr_course_pkgs
 git clone https://github.com/quangounet/denso_common common_pkgs/quangounet/denso_common
 git clone https://github.com/fsuarez6/bcap/  common_pkgs/fsuarez6/bcap
-git clone https://github.com/ompugao/iai_kinect2.git common_pkgs/ompugao/iai_kinect2 -b myworkingbranch
+git clone https://github.com/ompugao/iai_kinect2.git common_pkgs/ompugao/iai_kinect2 -b mybranch
 git clone https://github.com/UbiquityRobotics/fiducials UbiquityRobotics/fiducials
 
 # when you build or run
