@@ -35,4 +35,4 @@ echo "baseimage: " $baseimage
 
 docker build -t ompugao/ros:melodic-desktop-full-cudnn8-gl -f Dockerfile.ros --build-arg from=$baseimage --build-arg cuda_major=$cuda_major --build-arg cuda_minor=$cuda_minor --progress=plain .
 docker build -t ompugao/openrave-deps:melodic-desktop-full-cudnn8-gl -f Dockerfile.openrave-deps --target dev --build-arg from=ompugao/ros:melodic-desktop-full-cudnn8-gl . 
-docker-compose --project-name openrave_extras_devenv -f ./docker-compose.yml build
+docker-compose --project-name openrave_extras_devenv -f ./docker-compose.yml build app
