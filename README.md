@@ -18,7 +18,7 @@ https://github.com/ompugao/openrave_extras_devenv/# OpenRAVE + ROS melodic docke
 docker buildx install
 cd path/to/openrave_docker_development_template
 touch .devcontainer/.bash_history
-git clone https://github.com/rdiankov/openrave -b production
+git clone https://github.com/ompugao/openrave -b myworkingbranch
 git clone https://github.com/ompugao/openrave_extras
 
 # put whatever ros packages which depends only on openrave into common_pkgs
