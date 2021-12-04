@@ -16,8 +16,9 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
 FROM builder as openrave_builder
 COPY openrave /workspace/openrave
 # Install OpenRAVE
+RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt apt update && apt -y install libxml2-dev
 RUN --mount=type=cache,target=/root/.cache/sccache/ mkdir build_openrave && cd build_openrave \
-	&& BOOST_ROOT=/usr/local cmake -DODE_USE_MULTITHREAD=ON -DCMAKE_CXX_STANDARD=11 -DOSG_DIR=/usr/local/lib64/ -DCMAKE_BUILD_TYPE={{OPENRAVE_BUILD_TYPE}} -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DFCL_USE_STATISTICS=OFF -DOPT_LOG4CXX=OFF -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache /workspace/openrave \
+	&& BOOST_ROOT=/usr/local cmake -DODE_USE_MULTITHREAD=ON -DCMAKE_CXX_STANDARD=11 -DOSG_DIR=/usr/local/lib64/ -DCMAKE_BUILD_TYPE={{OPENRAVE_BUILD_TYPE}} -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DFCL_USE_STATISTICS=OFF -DOPT_LOG4CXX=ON -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache /workspace/openrave \
 	&& make -j `nproc` \
 	&& make install 
 # # uncomment the following lines when you omit openrave/build directory from this layer

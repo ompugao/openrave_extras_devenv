@@ -41,8 +41,10 @@ ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 
 # install bootstrap tools
+# the followings are for log4cxx: build-essential automake libapr1-dev libaprutil1-dev gzip zip
 RUN apt-get update && apt-get install --no-install-recommends -y \
     build-essential \
+    automake libapr1-dev libaprutil1-dev gzip zip \
     python-pip \
     # python-rosdep \
     # python-rosinstall \
@@ -88,6 +90,46 @@ RUN BOOST_SRC_DIR=~/3rdparty/boost_1_58_0 \
     && ./b2 -j `nproc` \
     && ./b2 -j `nproc` install threading=multi \
 	&& cd .. && rm -rf ${BOOST_SRC_DIR} ${BOOST_SRC_DIR}.tar.gz
+
+# Install log4cxx
+# ref: https://logging.apache.org/log4cxx/latest_stable/dependencies.html
+# > As of version 0.12.0, log4cxx requires a minimum C++ version of C++11. If C++17 is not available, then log4cxx requires Boost Thread in order to build.
+# COPY log4cxx_force_using_boost.patch /log4cxx_force_using_boost.patch
+# RUN mkdir -p ~/3rdparty && cd ~/3rdparty \
+# 	&& wget -q https://archive.apache.org/dist/logging/log4cxx/0.12.0/apache-log4cxx-0.12.0.tar.gz \
+# 	&& tar axf apache-log4cxx-0.12.0.tar.gz \
+# 	&& cd apache-log4cxx-0.12.0/ \
+# 	&& patch -p0 < /log4cxx_force_using_boost.patch \
+# 	&& mkdir build && cd build \
+#   	&& BOOST_ROOT=/usr/local cmake -DCMAKE_BUILD_TYPE=Release -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ .. \
+# 	&& make -j $(nproc) \
+# 	&& make install \
+# 	&& cd ../../ && rm -rf apache-log4cxx-0.12.0 apache-log4cxx-0.12.0.tar.gz /log4cxx_force_using_boost.patch
+
+# COPY log4cxx_0_10_0.patch /log4cxx_0_10_0.patch                                                      
+RUN mkdir -p ~/3rdparty && cd ~/3rdparty \                                                           
+	&& wget -q https://archive.apache.org/dist/logging/log4cxx/0.11.0/apache-log4cxx-0.11.0.tar.gz \ 
+	&& tar axf apache-log4cxx-0.11.0.tar.gz \                                                        
+	&& cd apache-log4cxx-0.11.0/ \                                                                   
+	# && patch -p0 < /log4cxx_0_11_0.patch \                                                           
+	&& ./autogen.sh \
+  	&& BOOST_ROOT=/usr/local CPPFLAGS="-I/usr/local/include" ./configure --prefix=/usr/local  \      
+	&& make -j $(nproc) \                                                                            
+	&& make install \                                                                                
+	&& cd ../ && rm -rf apache-log4cxx-0.11.0 apache-log4cxx-0.11.0.tar.gz /log4cxx_0_11_0.patch     
+
+
+# COPY log4cxx_0_10_0.patch /log4cxx_0_10_0.patch
+# RUN mkdir -p ~/3rdparty && cd ~/3rdparty \
+# 	&& wget -q https://archive.apache.org/dist/logging/log4cxx/0.10.0/apache-log4cxx-0.10.0.tar.gz \
+# 	&& tar axf apache-log4cxx-0.10.0.tar.gz \
+# 	&& cd apache-log4cxx-0.10.0/ \
+# 	&& patch -p0 < /log4cxx_0_10_0.patch \
+#   	&& BOOST_ROOT=/usr/local CPPFLAGS="-I/usr/local/include" ./configure --prefix=/usr/local  \
+# 	&& make -j $(nproc) \
+# 	&& make install \
+# 	&& cd ../ && rm -rf apache-log4cxx-0.10.0 apache-log4cxx-0.10.0.tar.gz /log4cxx_0_10_0.patch
+
 
 # Install PCL
 RUN apt-get update \
