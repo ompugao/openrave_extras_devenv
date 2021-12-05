@@ -32,6 +32,10 @@ elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 1 ]; then
 	unzip libtorch-cxx11-abi-shared-with-deps-1.8.1+cu111.zip
 	rm libtorch-cxx11-abi-shared-with-deps-1.8.1+cu111.zip
 else
+	# fatal: unable to access 'https://sourceware.org/git/valgrind.git/': server certificate verification failed. CAfile: /etc/ssl/certs/ca-certificates.crt CRLfile: none
+	# fatal: clone of 'https://sourceware.org/git/valgrind.git' into submodule path '/root/3rdparty/pytorch/third_party/valgrind' failed
+	# Failed to clone 'third_party/valgrind'. Retry scheduled
+	export GIT_SSL_NO_VERIFY=1
 	git clone --recurse-submodules https://github.com/pytorch/pytorch -b 1.7
 	#mkdir -p pytorch/build_libtorch && cd pytorch/build_libtorch
 	#python ../tools/build_libtorch.py
