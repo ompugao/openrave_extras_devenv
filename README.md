@@ -1,4 +1,4 @@
-https://github.com/ompugao/openrave_extras_devenv/# OpenRAVE + ROS melodic docker environment
+# OpenRAVE + ROS melodic docker environment
 
 ![openrave on vscode remote container](https://i.gyazo.com/d856a7f339f7e77fd52a7bab6cda6983.png)
 ## Prerequiresites
