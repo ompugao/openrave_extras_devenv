@@ -116,7 +116,7 @@ RUN mkdir -p ~/3rdparty && cd ~/3rdparty \
   	&& BOOST_ROOT=/usr/local CPPFLAGS="-I/usr/local/include" ./configure --prefix=/usr/local  \      
 	&& make -j $(nproc) \                                                                            
 	&& make install \                                                                                
-	&& cd ../ && rm -rf apache-log4cxx-0.11.0 apache-log4cxx-0.11.0.tar.gz /log4cxx_0_11_0.patch     
+	&& cd ../ && rm -rf apache-log4cxx-0.11.0 apache-log4cxx-0.11.0.tar.gz
 
 
 # COPY log4cxx_0_10_0.patch /log4cxx_0_10_0.patch
