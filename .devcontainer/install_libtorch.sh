@@ -14,23 +14,37 @@ function semverParseInto() {
     eval $5=`echo $1 | sed -e "s#$RE#\4#"`
 }
 
+install_unzip() {
+	apt update && apt install -y unzip
+}
+finalize() {
+	apt remove -y unzip
+	rm -rf /var/lib/apt/lists/*
+}
+
 semverParseInto $CUDA_VERSION cuda_major cuda_minor cuda_patch cuda_special
 echo "$CUDA_VERSION -> M: $cuda_major m:$cuda_minor p:$cuda_patch s:$cuda_special"
 
 mkdir -p ~/3rdparty && cd ~/3rdparty
 # Install libtorch
 if [ $cuda_major -eq 10 ] && [ $cuda_minor -eq 2 ]; then
+	install_unzip
 	wget -q --show-progress --progress=bar:force:noscroll https://download.pytorch.org/libtorch/cu102/libtorch-cxx11-abi-shared-with-deps-1.7.1.zip
 	unzip libtorch-cxx11-abi-shared-with-deps-1.7.1.zip
 	rm libtorch-cxx11-abi-shared-with-deps-1.7.1.zip
+	finalize
 elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 0 ]; then
+	install_unzip
 	wget -q --show-progress --progress=bar:force:noscroll https://download.pytorch.org/libtorch/cu110/libtorch-cxx11-abi-shared-with-deps-1.7.1%2Bcu110.zip
 	unzip libtorch-cxx11-abi-shared-with-deps-1.7.1+cu110.zip
 	rm libtorch-cxx11-abi-shared-with-deps-1.7.1+cu110.zip
+	finalize
 elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 1 ]; then
+	install_unzip
 	wget -q --show-progress --progress=bar:force:noscroll https://download.pytorch.org/libtorch/cu111/libtorch-cxx11-abi-shared-with-deps-1.8.1%2Bcu111.zip
 	unzip libtorch-cxx11-abi-shared-with-deps-1.8.1+cu111.zip
 	rm libtorch-cxx11-abi-shared-with-deps-1.8.1+cu111.zip
+	finalize
 else
 	# fatal: unable to access 'https://sourceware.org/git/valgrind.git/': server certificate verification failed. CAfile: /etc/ssl/certs/ca-certificates.crt CRLfile: none
 	# fatal: clone of 'https://sourceware.org/git/valgrind.git' into submodule path '/root/3rdparty/pytorch/third_party/valgrind' failed
