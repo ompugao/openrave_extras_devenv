@@ -32,6 +32,9 @@ git clone https://github.com/fsuarez6/bcap/  common_pkgs/fsuarez6/bcap
 git clone https://github.com/ompugao/iai_kinect2.git common_pkgs/ompugao/iai_kinect2 -b mybranch
 git clone https://github.com/UbiquityRobotics/fiducials UbiquityRobotics/fiducials
 
+# put whatever ros packages indenpendant to openrave into catkin_ws
+# git clone https://github.com/whatever/package catkin_ws/whatever/package
+
 # when you build or run
 bash ./set_xauth.sh
 python3 gen_dockerfile.py .devcontainer/Dockerfile.openrave .devcontainer/Dockerfile.openrave.gen
