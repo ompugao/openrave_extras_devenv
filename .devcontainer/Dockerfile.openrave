@@ -26,14 +26,21 @@ RUN --mount=type=cache,target=/root/.cache/sccache/ mkdir build_openrave && cd b
 # 	&& cp *deb /tmp/
 
 # install missing ros packages
-{{ COPY_PACKAGEXML_DEPENDENCIES }}
-COPY remove_installed_pkgs.py /remove_installed_pkgs.py
+{{ COPY_COMMON_PKGS_PACKAGEXML_DEPENDENCIES }}
+# COPY remove_installed_pkgs.py /remove_installed_pkgs.py
+# RUN --mount=type=cache,target=/root/.cache/sccache/ \
+# 	mkdir -p ~/ros_catkin_ws/common_pkgs_deps/src && cd ~/ros_catkin_ws/common_pkgs_deps \
+# 	&& . ~/ros_catkin_ws/parent/install_isolated/setup.sh \
+# 	&& rosdep keys --ignore-packages-from-source --from-paths ~/ros_catkin_ws/common_pkgs|grep -v boost|grep -v matplotlib|grep -v ^openrave$|awk '{print}' ORS=' '|xargs rosinstall_generator --rosdistro $ROS_DISTRO --tar --deps > .rosinstall \
+# 	&& python /remove_installed_pkgs.py ~/ros_catkin_ws/parent/melodic-desktop-full.rosinstall ./.rosinstall .rosinstall.gen \
+# 	&& vcs import src < .rosinstall.gen \
+# 	&& BOOST_ROOT=/usr/local catkin_make_isolated -j `nproc` --install -DCMAKE_BUILD_TYPE=Release -DBoost_NO_BOOST_CMAKE=ON -DBOOST_ROOT=/usr/local/ -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache -DCATKIN_ENABLE_TESTING=OFF \
+# 	&& rm -rf build_isolated
 RUN --mount=type=cache,target=/root/.cache/sccache/ \
 	mkdir -p ~/ros_catkin_ws/common_pkgs_deps/src && cd ~/ros_catkin_ws/common_pkgs_deps \
 	&& . ~/ros_catkin_ws/parent/install_isolated/setup.sh \
-	&& rosdep keys --ignore-packages-from-source --from-paths ~/ros_catkin_ws/common_pkgs|grep -v boost|grep -v matplotlib|grep -v openrave|awk '{print}' ORS=' '|xargs rosinstall_generator --rosdistro $ROS_DISTRO --tar --deps > .rosinstall \
-	&& python /remove_installed_pkgs.py ~/ros_catkin_ws/parent/melodic-desktop-full.rosinstall ./.rosinstall .rosinstall.gen \
-	&& vcs import src < .rosinstall.gen \
+	&& rosdep keys --ignore-packages-from-source --from-paths ~/ros_catkin_ws/common_pkgs|grep -v boost|grep -v matplotlib|grep -v ^openrave$|awk '{print}' ORS=' '|xargs rosinstall_generator --rosdistro $ROS_DISTRO --exclude $(rospack list|awk '{print $1}' ORS=' ') --tar --deps > .rosinstall \
+	&& vcs import src < .rosinstall \
 	&& BOOST_ROOT=/usr/local catkin_make_isolated -j `nproc` --install -DCMAKE_BUILD_TYPE=Release -DBoost_NO_BOOST_CMAKE=ON -DBOOST_ROOT=/usr/local/ -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache -DCATKIN_ENABLE_TESTING=OFF \
 	&& rm -rf build_isolated
 
@@ -61,10 +68,20 @@ ENV OPENRAVE_PLUGINS=$OPENRAVE_PLUGINS:/usr/local/lib/openrave_extras_plugins
 # FROM builder as main
 # COPY --from=openrave_builder /tmp/*deb /tmp
 # RUN dpkg -i /tmp/*deb && rm /tmp/*deb
+{{ COPY_CATKIN_WS_PACKAGEXML_DEPENDENCIES }}
+RUN --mount=type=cache,target=/root/.cache/sccache/ \
+	mkdir -p ~/ros_catkin_ws/dev_deps/src && cd ~/ros_catkin_ws/dev_deps \
+	&& . ~/ros_catkin_ws/common_pkgs/devel/setup.sh \
+	&& rosdep keys --ignore-packages-from-source --from-paths ~/ros_catkin_ws/dev|grep -v boost|grep -v matplotlib|grep -v ^openrave$|awk '{print}' ORS=' '|xargs rosinstall_generator --rosdistro $ROS_DISTRO --exclude $(rospack list|awk '{print $1}' ORS=' ') --tar --deps > .rosinstall \
+	&& vcs import src < .rosinstall \
+	&& /bin/bash -c "source ~/ros_catkin_ws/common_pkgs/devel/setup.bash; \
+	BOOST_ROOT=/usr/local catkin build --verbose --no-status -DCMAKE_BUILD_TYPE={{ROS_BUILD_TYPE}} -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache" \
+	&& rm -rf build logs
+
 RUN mkdir -p ~/ros_catkin_ws/dev
 COPY catkin_ws /root/ros_catkin_ws/dev/src
 RUN --mount=type=cache,target=/root/.cache/sccache/ cd ~/ros_catkin_ws/dev \
-	&& /bin/bash -c "source ~/ros_catkin_ws/common_pkgs/devel/setup.bash; \
+	&& /bin/bash -c "source ~/ros_catkin_ws/dev_deps/devel/setup.bash; \
 	BOOST_ROOT=/usr/local catkin build --verbose --no-status -DCMAKE_BUILD_TYPE={{ROS_BUILD_TYPE}} -DBoost_NO_BOOST_CMAKE=ON -DBoost_NO_SYSTEM_PATHS=TRUE -DBOOST_ROOT=/usr/local/ -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache"
 	# && rm build logs -rf
 

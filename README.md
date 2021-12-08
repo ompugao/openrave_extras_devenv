@@ -27,6 +27,7 @@ git clone https://github.com/personalrobotics/openrave_catkin common_pkgs/person
 git clone https://github.com/ompugao/or_rviz common_pkgs/ompugao/or_rviz -b feature/viewer_drawboxarray
 git clone https://github.com/ompugao/openrave_extras_msgs common_pkgs/ompugao/openrave_extras_msgs
 git clone https://github.com/crigroup/osr_course_pkgs common_pkgs/crigroup/osr_course_pkgs
+git clone https://github.com/crigroup/robotiq common_pkgs/crigroup/robotiq -b melodic-devel
 git clone https://github.com/quangounet/denso_common common_pkgs/quangounet/denso_common -b melodic-devel
 git clone https://github.com/fsuarez6/bcap/  common_pkgs/fsuarez6/bcap
 git clone https://github.com/ompugao/iai_kinect2.git common_pkgs/ompugao/iai_kinect2 -b mybranch
