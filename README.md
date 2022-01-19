@@ -12,7 +12,7 @@
 ## Usage
 
 ```sh
-# run only once
+####### run only once  ##########
 # activate buildkit for build cache
 # (https://github.com/docker/buildx#setting-buildx-as-default-builder-in-docker-1903)
 docker buildx install
@@ -34,9 +34,15 @@ git clone https://github.com/fsuarez6/bcap/  common_pkgs/fsuarez6/bcap
 git clone https://github.com/ompugao/iai_kinect2.git common_pkgs/ompugao/iai_kinect2 -b mybranch
 git clone https://github.com/UbiquityRobotics/fiducials common_pkgs/UbiquityRobotics/fiducials
 
-# when you build or run
+########## Build docker images ############
 bash ./set_xauth.sh
 python3 gen_dockerfile.py .devcontainer/Dockerfile.openrave .devcontainer/Dockerfile.openrave.gen
 # run vscode and open in Remote Dev Container, or
 cd .devcontainer/ && bash build-deps.sh
+
+########## Run ############
+bash ./set_xauth.sh # if you do not run this yet
+cd .devcontainer/ 
+./bash-on-docker.sh
+
 ```
