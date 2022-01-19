@@ -18,6 +18,7 @@
 docker buildx install
 cd path/to/openrave_docker_development_template
 touch .devcontainer/.bash_history
+mkdir common_pkgs catkin_ws
 git clone https://github.com/ompugao/openrave -b myworkingbranch
 git clone https://github.com/ompugao/openrave_extras
 
@@ -31,7 +32,7 @@ git clone https://github.com/crigroup/robotiq common_pkgs/crigroup/robotiq -b me
 git clone https://github.com/quangounet/denso_common common_pkgs/quangounet/denso_common -b melodic-devel
 git clone https://github.com/fsuarez6/bcap/  common_pkgs/fsuarez6/bcap
 git clone https://github.com/ompugao/iai_kinect2.git common_pkgs/ompugao/iai_kinect2 -b mybranch
-git clone https://github.com/UbiquityRobotics/fiducials UbiquityRobotics/fiducials
+git clone https://github.com/UbiquityRobotics/fiducials common_pkgs/UbiquityRobotics/fiducials
 
 # when you build or run
 bash ./set_xauth.sh
