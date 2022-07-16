@@ -27,12 +27,14 @@ elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 0 ]; then
 	baseimage="nvidia/cuda:11.0.3-cudnn8-devel-ubuntu18.04"
 elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 1 ]; then
 	baseimage="nvidia/cuda:11.1.1-cudnn8-devel-ubuntu18.04"
+elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 3 ]; then
+	baseimage="nvidia/cuda:11.3.1-cudnn8-devel-ubuntu18.04"
 else
 	echo "Unsupported CUDA Version: " $CUDA_VERSION
 	exit 1
 fi
 echo "baseimage: " $baseimage
 
-docker build -t ompugao/ros:melodic-desktop-full-cudnn8-gl -f Dockerfile.ros --build-arg from=$baseimage --build-arg cuda_major=$cuda_major --build-arg cuda_minor=$cuda_minor --progress=plain .
-docker build -t ompugao/openrave-deps:melodic-desktop-full-cudnn8-gl -f Dockerfile.openrave-deps --target dev --build-arg from=ompugao/ros:melodic-desktop-full-cudnn8-gl . 
+docker build -t ompugao/ros:melodic-desktop-full-cuda113-cudnn8-gl -f Dockerfile.ros --build-arg from=$baseimage --build-arg cuda_major=$cuda_major --build-arg cuda_minor=$cuda_minor --progress=plain .
+docker build -t ompugao/openrave-deps:melodic-desktop-full-cuda113-cudnn8-gl -f Dockerfile.openrave-deps --target dev --build-arg from=ompugao/ros:melodic-desktop-full-cuda113-cudnn8-gl . 
 docker-compose --project-name openrave_extras_devenv -f ./docker-compose.yml build app

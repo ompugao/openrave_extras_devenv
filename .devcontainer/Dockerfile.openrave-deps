@@ -123,15 +123,15 @@ RUN pip install --no-cache-dir --upgrade --user sympy==0.7.1
 COPY install_libtorch.sh /install_libtorch.sh
 RUN bash /install_libtorch.sh && rm /install_libtorch.sh
 
-COPY install_tensorrt.sh /install_tensorrt.sh
-RUN bash /install_tensorrt.sh && rm /install_tensorrt.sh
+# COPY install_tensorrt.sh /install_tensorrt.sh
+# RUN bash /install_tensorrt.sh && rm /install_tensorrt.sh
 
-RUN mkdir -p ~/3rdparty && cd ~/3rdparty \
-    && wget -q https://github.com/NVIDIA/TRTorch/releases/download/v0.3.0/libtrtorch-v0.3.0-cudnn8.1-tensorrt7.2-cuda11.1-libtorch-1.8.1.tar.gz \
-    && tar axf libtrtorch-v0.3.0-cudnn8.1-tensorrt7.2-cuda11.1-libtorch-1.8.1.tar.gz \
-    && rm libtrtorch-v0.3.0-cudnn8.1-tensorrt7.2-cuda11.1-libtorch-1.8.1.tar.gz \
-    && cp -r trtorch/* /usr \
-    && rm trtorch -rf
+# RUN mkdir -p ~/3rdparty && cd ~/3rdparty \
+#     && wget -q https://github.com/NVIDIA/TRTorch/releases/download/v0.3.0/libtrtorch-v0.3.0-cudnn8.1-tensorrt7.2-cuda11.1-libtorch-1.8.1.tar.gz \
+#     && tar axf libtrtorch-v0.3.0-cudnn8.1-tensorrt7.2-cuda11.1-libtorch-1.8.1.tar.gz \
+#     && rm libtrtorch-v0.3.0-cudnn8.1-tensorrt7.2-cuda11.1-libtorch-1.8.1.tar.gz \
+#     && cp -r trtorch/* /usr \
+#     && rm trtorch -rf
 
 FROM builder as dev
 # Install dev utils

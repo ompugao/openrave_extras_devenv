@@ -27,6 +27,8 @@ elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 0 ]; then
 	pip3 install torch==1.8.1+cu110 torchvision==0.9.1+cu110 torchaudio==0.8.1+cu110
 elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 1 ]; then
 	pip3 install --no-cache-dir torch==1.8.1+cu111 torchvision==0.9.1+cu111 torchaudio==0.8.1 -f https://download.pytorch.org/whl/torch_stable.html
+elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 3 ]; then
+	pip3 install --no-cache-dir torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu113
 else
 	exit 1
 fi

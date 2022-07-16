@@ -22,6 +22,8 @@ elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 0 ]; then
 	baseimage="nvidia/cuda:11.0.3-cudnn8-devel-ubuntu18.04"
 elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 1 ]; then
 	baseimage="nvidia/cuda:11.1.1-cudnn8-devel-ubuntu18.04"
+elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 3 ]; then
+	baseimage="nvidia/cuda:11.3.1-cudnn8-devel-ubuntu18.04"
 else
 	echo "Unsupported CUDA Version: " $CUDA_VERSION
 	exit 1

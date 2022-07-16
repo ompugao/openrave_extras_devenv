@@ -45,24 +45,39 @@ elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 1 ]; then
 	unzip libtorch-cxx11-abi-shared-with-deps-1.8.1+cu111.zip
 	rm libtorch-cxx11-abi-shared-with-deps-1.8.1+cu111.zip
 	finalize
+# libtorch library files are truncated when ldconfig
+# https://discuss.pytorch.org/t/libtorch-c-so-files-truncated-error-when-ldconfig/46404/2
+# elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 3 ]; then
+# 	install_unzip
+# 	wget -q --show-progress --progress=bar:force:noscroll https://download.pytorch.org/libtorch/cu113/libtorch-cxx11-abi-shared-with-deps-1.12.0%2Bcu113.zip
+# 	unzip libtorch-cxx11-abi-shared-with-deps-1.12.0+cu113.zip
+# 	rm libtorch-cxx11-abi-shared-with-deps-1.12.0+cu113.zip
+# 	finalize
 else
 	# fatal: unable to access 'https://sourceware.org/git/valgrind.git/': server certificate verification failed. CAfile: /etc/ssl/certs/ca-certificates.crt CRLfile: none
 	# fatal: clone of 'https://sourceware.org/git/valgrind.git' into submodule path '/root/3rdparty/pytorch/third_party/valgrind' failed
 	# Failed to clone 'third_party/valgrind'. Retry scheduled
 	export GIT_SSL_NO_VERIFY=1
-	git clone --recurse-submodules https://github.com/pytorch/pytorch -b 1.7
+	git clone --recurse-submodules https://github.com/pytorch/pytorch
+	cd pytorch
+	git checkout 340c412  # v1.11.0
+	git submodule update --init
+	cd ..
 	#mkdir -p pytorch/build_libtorch && cd pytorch/build_libtorch
 	#python ../tools/build_libtorch.py
 	mkdir pytorch-build
 	cd pytorch-build
-	apt update && apt install -y python3 python3-venv python3-pip
-	python3 -m venv libtorchbuildenv
+	apt update && apt install -y python3.8 python3.8-venv python3.8-dev python3-pip
+	# python3.8 -m ensurepip --upgrade  # not enabled for system python
+	wget https://bootstrap.pypa.io/get-pip.py && python3.8 get-pip.py && rm get-pip.py
+	python3.8 -m venv libtorchbuildenv
 	source libtorchbuildenv/bin/activate
-	pip3 install --no-cache-dir dataclasses PyYAML numpy
-	cmake -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_BUILD_TYPE:STRING=Release -DPYTHON_EXECUTABLE:PATH=`which python3` -DCMAKE_INSTALL_PREFIX:PATH=../libtorch ../pytorch 
+	python3.8 -m pip install --no-cache-dir Cython
+	python3.8 -m pip install --no-cache-dir dataclasses PyYAML numpy typing-extensions future six requests dataclasses
+	cmake -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_BUILD_TYPE:STRING=Release -DPYTHON_EXECUTABLE:PATH=`which python3.8` -DCMAKE_INSTALL_PREFIX:PATH=../libtorch ../pytorch 
 	cmake --build . --target install -- -j $(nproc)
 	deactivate
-	apt remove -y python3 python3-venv python3-pip
+	apt remove -y python3.8 python3.8-venv python3-pip
 	# apt autoremove -y #this will try to remove sudo which causes the error pasted at the last
 	rm -rf /var/lib/apt/lists/*
 	cd ..

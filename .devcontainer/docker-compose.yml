@@ -3,12 +3,12 @@ version: '3'
 services:
   app:
     # Using a Dockerfile is optional, but included for completeness.
-    image: ompugao/openrave:melodic-desktop-full-cudnn8-gl
+    image: ompugao/openrave:melodic-desktop-full-cuda113-cudnn8-gl
     build: 
       context: ..
       dockerfile: .devcontainer/Dockerfile.openrave.gen
       args:
-        from: ompugao/openrave-deps:melodic-desktop-full-cudnn8-gl
+        from: ompugao/openrave-deps:melodic-desktop-full-cuda113-cudnn8-gl
 
     volumes:
       # This is where VS Code should expect to find your project's source code and the value of "workspaceFolder" in .devcontainer/devcontainer.json
@@ -28,7 +28,8 @@ services:
 
     # Runs app on the same network as the service container, allows "forwardPorts" in devcontainer.json function.
     # network_mode: service:another-service
-    # network_mode: host
+    network_mode: host
+    privileged: true
     
     # Use "forwardPorts" in **devcontainer.json** to forward an app port locally. 
     # (Adding the "ports" property to this file will not forward from a Codespace.)
@@ -53,7 +54,7 @@ services:
 
   torch:
     # Using a Dockerfile is optional, but included for completeness.
-    image: ompugao/pytorch:cuda11.1-cudnn8
+    image: ompugao/pytorch:cuda11.3-cudnn8
     build: 
       context: ..
       dockerfile: .devcontainer/Dockerfile.torch
@@ -73,7 +74,7 @@ services:
 
     # Runs app on the same network as the service container, allows "forwardPorts" in devcontainer.json function.
     # network_mode: service:another-service
-    # network_mode: host
+    network_mode: host
     
     # Use "forwardPorts" in **devcontainer.json** to forward an app port locally. 
     # (Adding the "ports" property to this file will not forward from a Codespace.)
