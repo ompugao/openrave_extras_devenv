@@ -1,6 +1,8 @@
 openrave
 core
 catkin_ws
+common_pkgs
+sandbox
 .devcontainer/.bash_history
 .devcontainer/.ipython
 .devcontainer/.openrave
