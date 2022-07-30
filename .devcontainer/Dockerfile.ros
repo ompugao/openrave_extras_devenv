@@ -46,11 +46,11 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     build-essential \
     automake libapr1-dev libaprutil1-dev gzip zip \
     python-pip \
+    python-vcstool \
+    && rm -rf /var/lib/apt/lists/*
+    # python-rosinstall-generator \
     # python-rosdep \
     # python-rosinstall \
-    python-vcstool \
-    # python-rosinstall-generator \
-    && rm -rf /var/lib/apt/lists/*
 RUN pip install --no-cache-dir -U setuptools pip
 RUN pip install --no-cache-dir -U rosdep rosinstall_generator rosinstall #vcstool #vcstool supports only python3
 
@@ -81,9 +81,12 @@ RUN mkdir -p ~/ros_catkin_ws/parent && cd ~/ros_catkin_ws/parent && mkdir src \
 	&& rm -rf /var/lib/apt/lists/*
 
 # Install boost 1.58 from source
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    python-dev \
+    && rm -rf /var/lib/apt/lists/*
 RUN BOOST_SRC_DIR=~/3rdparty/boost_1_58_0 \
     && mkdir -p ~/3rdparty; cd ~/3rdparty \
-    && wget http://sourceforge.net/projects/boost/files/boost/1.58.0/boost_1_58_0.tar.gz -O ${BOOST_SRC_DIR}.tar.gz \
+    && wget -q http://sourceforge.net/projects/boost/files/boost/1.58.0/boost_1_58_0.tar.gz -O ${BOOST_SRC_DIR}.tar.gz \
     && tar -xzf ${BOOST_SRC_DIR}.tar.gz \
     && cd ${BOOST_SRC_DIR} \
     && ./bootstrap.sh --exec-prefix=/usr/local \
