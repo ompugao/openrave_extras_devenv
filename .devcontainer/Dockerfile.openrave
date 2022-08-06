@@ -59,6 +59,8 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
 # Install OpenRAVE Extras
 # openrave extras dependencies
 RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt apt update && apt -y install libgflags-dev libgoogle-glog-dev # libvtk7-dev
+#COPY .devcontainer/install_protobuf.sh /install_protobuf.sh
+#RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt bash /install_protobuf.sh && rm /install_protobuf.sh
 COPY openrave_extras /workspace/openrave_extras
 RUN --mount=type=cache,target=/root/.cache/sccache/ mkdir build_extras && cd build_extras \
 	&& /bin/bash -c "source ~/ros_catkin_ws/common_pkgs/devel/setup.bash ; \
