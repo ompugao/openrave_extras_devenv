@@ -49,19 +49,19 @@ elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 1 ]; then
 # https://discuss.pytorch.org/t/libtorch-c-so-files-truncated-error-when-ldconfig/46404/2
 # elif [ $cuda_major -eq 11 ] && [ $cuda_minor -eq 3 ]; then
 # 	install_unzip
-# 	wget -q --show-progress --progress=bar:force:noscroll https://download.pytorch.org/libtorch/cu113/libtorch-cxx11-abi-shared-with-deps-1.12.0%2Bcu113.zip
-# 	unzip libtorch-cxx11-abi-shared-with-deps-1.12.0+cu113.zip
-# 	rm libtorch-cxx11-abi-shared-with-deps-1.12.0+cu113.zip
+# 	wget -q --show-progress --progress=bar:force:noscroll https://download.pytorch.org/libtorch/cu113/libtorch-cxx11-abi-shared-with-deps-1.12.1%2Bcu113.zip
+# 	unzip libtorch-cxx11-abi-shared-with-deps-1.12.1+cu113.zip
+# 	rm libtorch-cxx11-abi-shared-with-deps-1.12.1+cu113.zip
 # 	finalize
 else
 	# fatal: unable to access 'https://sourceware.org/git/valgrind.git/': server certificate verification failed. CAfile: /etc/ssl/certs/ca-certificates.crt CRLfile: none
 	# fatal: clone of 'https://sourceware.org/git/valgrind.git' into submodule path '/root/3rdparty/pytorch/third_party/valgrind' failed
 	# Failed to clone 'third_party/valgrind'. Retry scheduled
 	export GIT_SSL_NO_VERIFY=1
-	git clone --recurse-submodules https://github.com/pytorch/pytorch
+	git clone --recursive -j $(nproc) --recurse-submodules https://github.com/pytorch/pytorch
 	cd pytorch
-	git checkout 340c412  # v1.11.0
-	git submodule update --init
+	git checkout v1.12.1  # v1.11.0
+	git submodule update --init --recursive
 	cd ..
 	#mkdir -p pytorch/build_libtorch && cd pytorch/build_libtorch
 	#python ../tools/build_libtorch.py
