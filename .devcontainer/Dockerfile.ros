@@ -11,12 +11,37 @@ MAINTAINER Shohei Fujii <fujii.shohei@gmail.com>
 
 # taken from
 # https://gitlab.com/nvidia/container-images/opengl/blob/ubuntu18.04/glvnd/devel/Dockerfile
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         pkg-config \
         libglvnd-dev  \
         libgl1-mesa-dev \
         libegl1-mesa-dev \
-        libgles2-mesa-dev && \
+        libgles2-mesa-dev \
+        apt-transport-https \
+        ca-certificates \
+        dbus \
+        fontconfig \
+        gnupg \
+        libasound2 \
+        libfreetype6 \
+        libglib2.0-0 \
+        libnss3 \
+        libsqlite3-0 \
+        libx11-xcb1 \
+        libxcb-glx0 \
+        libxcb-xkb1 \
+        libxcomposite1 \
+        libxcursor1 \
+        libxdamage1 \
+        libxi6 \
+        libxml2 \
+        libxrandr2 \
+        libxrender1 \
+        libxtst6 \
+        openssh-client \
+        wget \
+        xcb \
+        xkb-data && \
     rm -rf /var/lib/apt/lists/*
 
 # -------

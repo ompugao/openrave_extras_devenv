@@ -14,6 +14,7 @@ RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloa
 # RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt apt update && apt -y install checkinstall
 
 FROM builder as openrave_builder
+RUN --mount=type=cache,target=/root/.cache/pip pip2 install git+https://github.com/libigl/libigl-python-bindings@2.2.1
 COPY openrave /workspace/openrave
 # Install OpenRAVE
 RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt apt update && apt -y install libxml2-dev
