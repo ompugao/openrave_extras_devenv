@@ -67,17 +67,17 @@ else
 	#python ../tools/build_libtorch.py
 	mkdir pytorch-build
 	cd pytorch-build
-	apt update && apt install -y python3.8 python3.8-venv python3.8-dev python3-pip
+	apt update && apt install -y python3.8 python3.8-venv python3.8-dev python3-pip ninja-build
 	# python3.8 -m ensurepip --upgrade  # not enabled for system python
 	wget https://bootstrap.pypa.io/get-pip.py && python3.8 get-pip.py && rm get-pip.py
 	python3.8 -m venv libtorchbuildenv
 	source libtorchbuildenv/bin/activate
 	python3.8 -m pip install --no-cache-dir Cython
 	python3.8 -m pip install --no-cache-dir dataclasses PyYAML numpy typing-extensions future six requests dataclasses
-	cmake -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_BUILD_TYPE:STRING=Release -DPYTHON_EXECUTABLE:PATH=`which python3.8` -DCMAKE_INSTALL_PREFIX:PATH=../libtorch ../pytorch 
+	cmake -GNinja -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_BUILD_TYPE:STRING=Release -DPYTHON_EXECUTABLE:PATH=`which python3.8` -DCMAKE_INSTALL_PREFIX:PATH=../libtorch ../pytorch 
 	cmake --build . --target install -- -j $(nproc)
 	deactivate
-	apt remove -y python3.8 python3.8-venv python3-pip
+	apt remove -y python3.8 python3.8-venv python3-pip ninja-build
 	# apt autoremove -y #this will try to remove sudo which causes the error pasted at the last
 	rm -rf /var/lib/apt/lists/*
 	cd ..
